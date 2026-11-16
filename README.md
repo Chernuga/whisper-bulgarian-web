@@ -22,6 +22,7 @@ inside the Android app, because the model runs natively on the phone.
   - `transcribeSample("bg"|"en")` — Bulgarian or English test clip.
   - `setModel("base"|"bul")` — generic multilingual Whisper Base or the
     Bulgarian-specific Whisper Small.
+  - `setLanguage("bg"|"auto")` — Base language; Small BG is always Bulgarian.
   - `setThreads(6|8)` — persisted CPU thread count.
 - The page polls `getState()` every 250 ms. No network requests and no cloud
   inference are involved.
