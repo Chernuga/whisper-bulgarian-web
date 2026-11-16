@@ -448,6 +448,13 @@
           <button type="button" data-model="bul">Small · BG</button>
         </div>
       </div>
+      <div class="setting" id="languageSetting">
+        <span class="setting-label">ЕЗИК</span>
+        <div class="segmented" role="group" aria-label="Език">
+          <button type="button" data-language="auto">Auto</button>
+          <button type="button" data-language="bg" class="active">BG</button>
+        </div>
+      </div>
       <div class="setting">
         <span class="setting-label">НИШКИ</span>
         <div class="segmented" role="group" aria-label="Брой нишки">
@@ -473,7 +480,7 @@
 
   <footer>
     <span id="modelDetail">whisper-base · Q5_1 · CPU</span>
-    <span id="version">web v3</span>
+    <span id="version">web v4</span>
   </footer>
 </div>
 
@@ -496,7 +503,8 @@
     rtf: 0,
     model: "base",
     modelLabel: "Base · общ",
-    modelDetail: "whisper-base · Q5_1 · multilingual",
+    modelDetail: "whisper-base · Q5_1",
+    language: "bg",
     sampleBg: true,
     sampleEn: true
   };
@@ -518,7 +526,9 @@
     micIcon: document.getElementById("micIcon"),
     stopIcon: document.getElementById("stopIcon"),
     modelDetail: document.getElementById("modelDetail"),
+    languageSetting: document.getElementById("languageSetting"),
     modelButtons: Array.prototype.slice.call(document.querySelectorAll("[data-model]")),
+    languageButtons: Array.prototype.slice.call(document.querySelectorAll("[data-language]")),
     threadButtons: Array.prototype.slice.call(document.querySelectorAll("[data-threads]"))
   };
 
@@ -586,6 +596,13 @@
     el.modelButtons.forEach(function (button) {
       var id = button.getAttribute("data-model");
       button.classList.toggle("active", id === state.model);
+      button.disabled = !ready || isBusy;
+    });
+    var isBase = state.model === "base";
+    el.languageSetting.classList.toggle("hidden", !isBase);
+    el.languageButtons.forEach(function (button) {
+      var lang = button.getAttribute("data-language");
+      button.classList.toggle("active", lang === state.language);
       button.disabled = !ready || isBusy;
     });
     el.threadButtons.forEach(function (button) {
@@ -678,6 +695,7 @@
     el.copy.disabled = true;
     el.recordLabel.textContent = "Отворете в приложението";
     el.modelButtons.forEach(function (button) { button.disabled = true; });
+    el.languageButtons.forEach(function (button) { button.disabled = true; });
     el.threadButtons.forEach(function (button) { button.disabled = true; });
     setStatus("Страницата е интерфейс към Android приложението.", "error");
   } else {
@@ -706,6 +724,16 @@
         if (id === "base" || id === "bul") {
           call("setModel", id);
           setTimeout(poll, 200);
+        }
+      });
+    });
+
+    el.languageButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        var language = button.getAttribute("data-language");
+        if (language === "auto" || language === "bg") {
+          call("setLanguage", language);
+          setTimeout(poll, 120);
         }
       });
     });
