@@ -7,6 +7,8 @@ Hosted with GitHub Pages:
 
 **https://chernuga.github.io/whisper-bulgarian-web/**
 
+![Web interface](screenshot.png)
+
 Opening the page in a normal browser shows a notice: the controls only work
 inside the Android app, because the model runs natively on the phone.
 
