@@ -532,6 +532,7 @@
     }
 
     el.sample.disabled = !ready || isBusy;
+    el.sample.classList.toggle("hidden", state.sampleAvailable === false);
     el.copy.disabled = !transcript;
     el.threadButtons.forEach(function (button) {
       var n = Number(button.getAttribute("data-threads"));
