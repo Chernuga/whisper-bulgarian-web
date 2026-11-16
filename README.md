@@ -17,9 +17,11 @@ inside the Android app, because the model runs natively on the phone.
 - The Android app loads this page in a `WebView`.
 - `window.BulWhisper` is injected by the app and exposes:
   - `getState()` — JSON state (loading/ready/recording/transcribing, transcript,
-    threads, timings).
+    threads, timings, model).
   - `startRecording()` / `stopRecording()` — native `AudioRecord` capture.
-  - `transcribeSample()` — transcribe the bundled Bulgarian test clip.
+  - `transcribeSample("bg"|"en")` — Bulgarian or English test clip.
+  - `setModel("base"|"bul")` — generic multilingual Whisper Base or the
+    Bulgarian-specific Whisper Small.
   - `setThreads(6|8)` — persisted CPU thread count.
 - The page polls `getState()` every 250 ms. No network requests and no cloud
   inference are involved.
