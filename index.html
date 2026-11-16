@@ -233,15 +233,74 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .controls {
+  .settings {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 14px 0 16px;
+    flex-direction: column;
+    gap: 9px;
+    margin: 14px 0 10px;
   }
 
-  .secondary, .threads button {
+  .setting {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .setting-label {
+    flex: 0 0 58px;
+    color: var(--faint);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+  }
+
+  .segmented {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(12, 18, 25, 0.7);
+  }
+
+  .segmented button {
+    flex: 1;
+    min-width: 0;
+    min-height: 36px;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--faint);
+    padding: 0 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease, opacity 150ms ease;
+  }
+
+  .segmented button.active {
+    background: rgba(77, 184, 255, 0.15);
+    color: #bfe8ff;
+    box-shadow: 0 0 0 1px rgba(77, 184, 255, 0.22) inset;
+  }
+
+  .segmented button:disabled {
+    opacity: 0.38;
+    cursor: default;
+  }
+
+  .test-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0 0 16px;
+  }
+
+  .secondary {
     appearance: none;
     border: 1px solid var(--line);
     background: rgba(23, 33, 44, 0.9);
@@ -255,38 +314,8 @@
     transition: background 150ms ease, border-color 150ms ease, opacity 150ms ease;
   }
 
-  .secondary:hover, .threads button:hover { background: #1a2632; border-color: rgba(255, 255, 255, 0.14); }
-  .secondary:disabled, .threads button:disabled { opacity: 0.38; cursor: default; }
-
-  .threads {
-    display: flex;
-    flex: 1;
-    min-width: 0;
-    gap: 4px;
-    padding: 3px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: rgba(12, 18, 25, 0.7);
-  }
-
-  .threads button {
-    flex: 1;
-    min-width: 0;
-    min-height: 36px;
-    border: 0;
-    background: transparent;
-    color: var(--faint);
-    padding: 0 6px;
-    border-radius: 10px;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
-  .threads button.active {
-    background: rgba(77, 184, 255, 0.15);
-    color: #bfe8ff;
-    box-shadow: 0 0 0 1px rgba(77, 184, 255, 0.22) inset;
-  }
+  .secondary:hover { background: #1a2632; border-color: rgba(255, 255, 255, 0.14); }
+  .secondary:disabled { opacity: 0.38; cursor: default; }
 
   .transcript-card {
     border: 1px solid var(--line);
@@ -364,14 +393,11 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  @media (max-width: 520px) {
-    .controls { flex-direction: column; align-items: stretch; }
-    .secondary { width: 100%; }
-    .threads { width: 100%; flex: none; }
-  }
-
   @media (max-width: 380px) {
     .app { padding-left: 14px; padding-right: 14px; }
+    .setting { gap: 8px; }
+    .setting-label { flex-basis: 48px; }
+    .segmented button { padding: 0 5px; font-size: 11px; }
   }
 </style>
 </head>
@@ -414,12 +440,26 @@
       <div id="meta" class="meta"></div>
     </section>
 
-    <div class="controls">
-      <button id="sample" class="secondary" type="button" disabled>Тест</button>
-      <div class="threads" role="group" aria-label="Брой нишки">
-        <button type="button" data-threads="6" class="active">6 нишки</button>
-        <button type="button" data-threads="8">8 нишки</button>
+    <div class="settings">
+      <div class="setting">
+        <span class="setting-label">МОДЕЛ</span>
+        <div class="segmented" role="group" aria-label="Модел">
+          <button type="button" data-model="base" class="active">Base · общ</button>
+          <button type="button" data-model="bul">Small · BG</button>
+        </div>
       </div>
+      <div class="setting">
+        <span class="setting-label">НИШКИ</span>
+        <div class="segmented" role="group" aria-label="Брой нишки">
+          <button type="button" data-threads="6" class="active">6 нишки</button>
+          <button type="button" data-threads="8">8 нишки</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-row">
+      <button id="sampleBg" class="secondary" type="button" disabled>Тест BG</button>
+      <button id="sampleEn" class="secondary" type="button" disabled>Тест EN</button>
     </div>
 
     <section class="transcript-card">
@@ -432,8 +472,8 @@
   </main>
 
   <footer>
-    <span>whisper-small-bul-16384 · Q5_0 · CPU</span>
-    <span id="version">web v2</span>
+    <span id="modelDetail">whisper-base · Q5_1 · CPU</span>
+    <span id="version">web v3</span>
   </footer>
 </div>
 
@@ -454,7 +494,11 @@
     lastDuration: 0,
     lastElapsed: 0,
     rtf: 0,
-    sampleAvailable: true
+    model: "base",
+    modelLabel: "Base · общ",
+    modelDetail: "whisper-base · Q5_1 · multilingual",
+    sampleBg: true,
+    sampleEn: true
   };
   var polling = false;
   var lastRenderedTranscript = null;
@@ -466,12 +510,15 @@
     record: document.getElementById("record"),
     recordLabel: document.getElementById("recordLabel"),
     meta: document.getElementById("meta"),
-    sample: document.getElementById("sample"),
+    sampleBg: document.getElementById("sampleBg"),
+    sampleEn: document.getElementById("sampleEn"),
     copy: document.getElementById("copy"),
     transcript: document.getElementById("transcript"),
     standalone: document.getElementById("standalone"),
     micIcon: document.getElementById("micIcon"),
     stopIcon: document.getElementById("stopIcon"),
+    modelDetail: document.getElementById("modelDetail"),
+    modelButtons: Array.prototype.slice.call(document.querySelectorAll("[data-model]")),
     threadButtons: Array.prototype.slice.call(document.querySelectorAll("[data-threads]"))
   };
 
@@ -531,14 +578,22 @@
       el.recordLabel.textContent = "Започни запис";
     }
 
-    el.sample.disabled = !ready || isBusy;
-    el.sample.classList.toggle("hidden", state.sampleAvailable === false);
+    el.sampleBg.disabled = !ready || isBusy;
+    el.sampleBg.classList.toggle("hidden", state.sampleBg === false);
+    el.sampleEn.disabled = !ready || isBusy;
+    el.sampleEn.classList.toggle("hidden", state.sampleEn === false);
     el.copy.disabled = !transcript;
+    el.modelButtons.forEach(function (button) {
+      var id = button.getAttribute("data-model");
+      button.classList.toggle("active", id === state.model);
+      button.disabled = !ready || isBusy;
+    });
     el.threadButtons.forEach(function (button) {
       var n = Number(button.getAttribute("data-threads"));
       button.classList.toggle("active", n === Number(state.threads));
       button.disabled = !ready || isRecording;
     });
+    el.modelDetail.textContent = (state.modelDetail || "whisper") + " · " + state.threads + " нишки · CPU";
 
     if (state.status) {
       var kind = "busy";
@@ -618,9 +673,11 @@
   if (!hasBridge) {
     el.standalone.classList.remove("hidden");
     el.record.disabled = true;
-    el.sample.disabled = true;
+    el.sampleBg.disabled = true;
+    el.sampleEn.disabled = true;
     el.copy.disabled = true;
     el.recordLabel.textContent = "Отворете в приложението";
+    el.modelButtons.forEach(function (button) { button.disabled = true; });
     el.threadButtons.forEach(function (button) { button.disabled = true; });
     setStatus("Страницата е интерфейс към Android приложението.", "error");
   } else {
@@ -633,9 +690,24 @@
       setTimeout(poll, 150);
     });
 
-    el.sample.addEventListener("click", function () {
-      call("transcribeSample");
+    el.sampleBg.addEventListener("click", function () {
+      call("transcribeSample", "bg");
       setTimeout(poll, 150);
+    });
+
+    el.sampleEn.addEventListener("click", function () {
+      call("transcribeSample", "en");
+      setTimeout(poll, 150);
+    });
+
+    el.modelButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        var id = button.getAttribute("data-model");
+        if (id === "base" || id === "bul") {
+          call("setModel", id);
+          setTimeout(poll, 200);
+        }
+      });
     });
 
     el.threadButtons.forEach(function (button) {
